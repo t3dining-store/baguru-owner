@@ -157,8 +157,10 @@ a.hub-card[href]:active, button.hub-card:not(:disabled):active { background: var
 
   <!-- ★カードの行き先には ?from=owner を付ける（T3 Owner と同じ印）。
        それぞれのアプリが「ここから来た」と分かれば、ホームに戻るボタンを出す（3つとも 2026-10-30 に付いた）。
-       ★この画面は公式アプリとは別の公開先（t3dining/baguru-owner）にあるので、行き先と絵は公開先のアドレスで書き、
-       この Mac で開いたときだけ data-local の場所に差し替える（下の <script>）。 -->
+       ★この画面は公式アプリとは別の公開先（t3dining-store/baguru-owner）にあるので、行き先と絵は公開先のアドレスで書き、
+       この Mac で開いたときだけ data-local の場所に差し替える（下の <script>）。
+       ★2026-11-05 お店用アプリの引っ越し（../お店用アプリの引っ越し.md）：お店用のアプリ（マネージ・Order受付・予約ボード・LINE引き継ぎ・Owner・Staff）は
+       t3dining-store.github.io に移った。公式アプリとホームページは t3dining.github.io のまま（保存場所が別なので、そちらには bg.owner の控えが届かない） -->
 
   <h2 class="hub__group" data-en="APP">公式アプリ</h2>
   <ul class="hub__list">
@@ -175,10 +177,10 @@ a.hub-card[href]:active, button.hub-card:not(:disabled):active { background: var
       </a>
     </li>
     <li>
-      <!-- 公式アプリの管理アプリ（別の公開先 t3dining/baguru-manage。もとは 店舗アプリ/バグる/バグるマネージ/） -->
-      <a class="hub-card" href="https://t3dining.github.io/baguru-manage/index.html?from=owner"
+      <!-- 公式アプリの管理アプリ（別の公開先 t3dining-store/baguru-manage。もとは 店舗アプリ/バグる/バグるマネージ/） -->
+      <a class="hub-card" href="https://t3dining-store.github.io/baguru-manage/index.html?from=owner"
          data-local="../バグるマネージ/index.html?from=owner" style="--card-color:#1f1916">
-        <span class="hub-card__icon"><img src="https://t3dining.github.io/baguru-manage/img/manage-icon-192.png"
+        <span class="hub-card__icon"><img src="https://t3dining-store.github.io/baguru-manage/img/manage-icon-192.png"
               data-local="../バグるマネージ/img/manage-icon-192.png" alt=""></span>
         <span class="hub-card__text">
           <span class="hub-card__name">バグるマネージ</span>
@@ -192,9 +194,9 @@ a.hub-card[href]:active, button.hub-card:not(:disabled):active { background: var
   <h2 class="hub__group" data-en="SHOP">お店で使う</h2>
   <ul class="hub__list">
     <li>
-      <a class="hub-card" href="https://t3dining.github.io/baguru-app/order.html?from=owner"
+      <a class="hub-card" href="https://t3dining-store.github.io/baguru-order/order.html?from=owner"
          data-local="../バグるOrder受付/order.html?from=owner" style="--card-color:#1d3128">
-        <span class="hub-card__icon"><img src="https://t3dining.github.io/baguru-app/img/store-icon-192.png"
+        <span class="hub-card__icon"><img src="https://t3dining-store.github.io/baguru-order/img/store-icon-192.png"
               data-local="../バグるOrder受付/img/store-icon-192.png" alt=""></span>
         <span class="hub-card__text">
           <span class="hub-card__name">バグる<wbr>Order受付</span>
@@ -204,9 +206,9 @@ a.hub-card[href]:active, button.hub-card:not(:disabled):active { background: var
       </a>
     </li>
     <li>
-      <a class="hub-card" href="https://t3dining.github.io/baguru-yoyaku/?from=owner"
+      <a class="hub-card" href="https://t3dining-store.github.io/baguru-yoyaku/?from=owner"
          data-local="../予約ボード/board/index.html?from=owner" style="--card-color:#1b4a63">
-        <span class="hub-card__icon"><img src="https://t3dining.github.io/baguru-yoyaku/icon-192.png"
+        <span class="hub-card__icon"><img src="https://t3dining-store.github.io/baguru-yoyaku/icon-192.png"
               data-local="../予約ボード/board/icon-192.png" alt=""></span>
         <span class="hub-card__text">
           <span class="hub-card__name">予約ボード</span>
@@ -216,10 +218,10 @@ a.hub-card[href]:active, button.hub-card:not(:disabled):active { background: var
       </a>
     </li>
     <li>
-      <!-- LINE のポイントの数を台帳に入れるアプリ（別の公開先 t3dining/baguru-line。もとは 店舗アプリ/バグる/バグるLINE引き継ぎ/） -->
-      <a class="hub-card" href="https://t3dining.github.io/baguru-line/?from=owner"
+      <!-- LINE のポイントの数を台帳に入れるアプリ（別の公開先 t3dining-store/baguru-line。もとは 店舗アプリ/バグる/バグるLINE引き継ぎ/） -->
+      <a class="hub-card" href="https://t3dining-store.github.io/baguru-line/?from=owner"
          data-local="../バグるLINE引き継ぎ/index.html?from=owner" style="--card-color:#b8914b">
-        <span class="hub-card__icon"><img src="https://t3dining.github.io/baguru-line/img/line-icon-192.png"
+        <span class="hub-card__icon"><img src="https://t3dining-store.github.io/baguru-line/img/line-icon-192.png"
               data-local="../バグるLINE引き継ぎ/img/line-icon-192.png" alt=""></span>
         <span class="hub-card__text">
           <span class="hub-card__name">バグる<wbr>LINE引き継ぎ</span>
