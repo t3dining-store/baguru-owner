@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<!-- ★viewport-fit=cover は付けない。Owner から移ったページで cover を付けると、iPhone で使える高さが時計の帯のぶん短くなり、
+     下にすき間ができる（2026-11-01 に測った。README の「Owner から開いたアプリは…」）。cover が無いと、iPhone が時計の帯の下から並べてくれる -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="theme-color" content="#1f1916">
+<title>公式アプリ｜バグる Owner</title>
+<!-- ============================================================
+ *  公式アプリを、バグる Owner の中にはめ込むページ（2026-11-05 ko-dai さんの指示「直してください」）
+ *  わけ：お店用アプリの引っ越し（../お店用アプリの引っ越し.md）で、Owner は t3dining-store.github.io に移り、
+ *    公式アプリ（t3dining.github.io/baguru-app/）は Owner の範囲（manifest の scope "/"）の外になった。
+ *    iPhone のホーム画面の Owner から開くと、ブラウザの画面（枠つき）になる。
+ *    このページは Owner の範囲の中にあるので枠が付かない。公式アプリは中の iframe に出す。
+ *  ★このページには何も覚えさせない・読ませない（お店の合言葉と同じ保存場所にあるため）。
+ *    公式アプリからの知らせ（postMessage）も受けない。スクリプトは、下の行き先を決める数行だけにする
+ *  ★🏠 は足さない。公式アプリの側の 🏠 が、枠の外（Owner）に戻る（公式アプリのセッションが直す）。2つ出さないため
+ *  ★sandbox は付けない（テスト用アカウントで、スタンプや LINE の QR をカメラで読むため。allow で許すものを決める）
+ *  はめ込まれた公式アプリの保存は、ブラウザが Owner の中だけの場所に分ける（ふつうに開いた公式アプリとは別。テスト用アカウントは作り直し）
+ * ============================================================ -->
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #1f1916; }   /* 色は公式アプリの上の帯と同じ */
+  /* iPhone の安全な余白は、このページで取る（中の公式アプリには届かないため）。いまは cover が無いので 0 */
+  .frame {
+    position: fixed;
+    top: env(safe-area-inset-top); right: env(safe-area-inset-right);
+    bottom: env(safe-area-inset-bottom); left: env(safe-area-inset-left);
+  }
+  .frame iframe { display: block; width: 100%; height: 100%; border: 0; background: #e7ddd0; }   /* 公式アプリの地の色 */
+</style>
+</head>
+<body>
+<div class="frame">
+  <iframe id="app" title="バグる 公式アプリ" allow="camera; geolocation; clipboard-write; web-share; fullscreen"></iframe>
+</div>
+<script>
+  // 行き先は公式アプリの公開先（この Mac で開いたときだけ手元の公式アプリ）。?from=owner は「Owner から開いた」印で、必ず付ける。
+  // ・?to=… で、公式アプリの中のページを選べる（例：app.html?to=takeout.html。to の中に ? や # を入れるときは encodeURIComponent で）。
+  //   ホームページの中の「モバイルオーダー」「アプリを開く」を、Owner の中から開いたときに使う（2026-11-05。セッション「バグる HP」）
+  //   ★開くのは公式アプリの公開先（https://t3dining.github.io/baguru-app/）の下だけ。ほかのアドレス（ほかの場所・../ で上に出るもの・javascript: など）は開かず、公式アプリの入口を出す
+  // ・このページを開いたときの、to のほかの ?…（この Mac の ?test など）と #… も渡す
+  (function () {
+    var LOCAL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+    var base = new URL(LOCAL ? '../' : 'https://t3dining.github.io/baguru-app/', location.href);
+    var here = new URL(location.href);
+    var url;
+    try { url = new URL(here.searchParams.get('to') || '', base); } catch (e) { url = null; }
+    if (!url || url.origin !== base.origin || url.pathname.indexOf(base.pathname) !== 0) url = new URL(base.href);
+    here.searchParams.forEach(function (v, k) { if (k !== 'to') url.searchParams.set(k, v); });
+    url.searchParams.set('from', 'owner');
+    if (here.hash) url.hash = here.hash;
+    document.getElementById('app').src = url.href;
+  })();
+</script>
+</body>
+</html>

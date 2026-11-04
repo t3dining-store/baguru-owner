@@ -165,8 +165,10 @@ a.hub-card[href]:active, button.hub-card:not(:disabled):active { background: var
   <h2 class="hub__group" data-en="APP">公式アプリ</h2>
   <ul class="hub__list">
     <li>
-      <a class="hub-card" href="https://t3dining.github.io/baguru-app/?from=owner"
-         data-local="../index.html?from=owner" style="--card-color:#c7361d">
+      <!-- ★公式アプリは、Owner の中の app.html（はめ込むページ）で開く（2026-11-05 ko-dai さんの指示「直してください」）。
+           公式アプリは t3dining.github.io のままで、引っ越した Owner の範囲の外なので、直接開くと iPhone でブラウザの画面になる。
+           app.html が https://t3dining.github.io/baguru-app/?from=owner を中に出す（この Mac では手元の公式アプリ） -->
+      <a class="hub-card" href="app.html" style="--card-color:#c7361d">
         <span class="hub-card__icon"><img src="https://t3dining.github.io/baguru-app/img/icon-192.png"
               data-local="../img/icon-192.png" alt=""></span>
         <span class="hub-card__text">
@@ -239,9 +241,10 @@ a.hub-card[href]:active, button.hub-card:not(:disabled):active { background: var
   <ul class="hub__list">
     <li>
       <!-- ホームページ。牛のロゴは公式アプリのアイコンと同じもの（ホームページは店舗アプリの img から写している）
-           2026-11-04 にホームページを公開した（検索には出さない形。Coming soon は同じ日に外した） -->
-      <a class="hub-card" data-hp="site" href="https://t3dining.github.io/baguru/?from=owner"
-         data-local="../../../ホームページ/公開用/index.html?from=owner" style="--card-color:#1f1916">
+           2026-11-04 にホームページを公開した（検索には出さない形。Coming soon は同じ日に外した）
+           ★ホームページも、Owner の中の hp.html（はめ込むページ）で開く（2026-11-05。わけは上の公式アプリと同じ）。
+           hp.html が https://t3dining.github.io/baguru/?from=owner を中に出す。★下の「ホームページの管理」は、はめ込まない -->
+      <a class="hub-card" data-hp="site" href="hp.html" style="--card-color:#1f1916">
         <span class="hub-card__icon"><img src="https://t3dining.github.io/baguru-app/img/icon-192.png"
               data-local="../img/icon-192.png" alt=""></span>
         <span class="hub-card__text">
