@@ -14,7 +14,8 @@
  *  ホームページを、バグる Owner の中にはめ込むページ（2026-11-05 ko-dai さんの指示「直してください」）
  *  わけは app.html と同じ：ホームページ（t3dining.github.io/baguru/）は、引っ越した Owner の範囲の外なので、
  *    iPhone のホーム画面の Owner から開くとブラウザの画面になる。このページは範囲の中なので枠が付かない
- *  ★このページには何も覚えさせない・読ませない。postMessage も受けない
+ *  ★このページは、お店の保存（合言葉など。同じ保存場所にある）を読まない・渡さない。何も覚えない。
+ *    読むのは、app.html が預かったテスト用アカウントの鍵（bg.appTest）だけ。中のホームページが即予約を試すときに渡す（下の「テスト用アカウントの鍵を渡す」）
  *  ★🏠 は足さない。ホームページの側の 🏠 が、枠の外（Owner）に戻る（セッション「バグる HP」が直す）
  *  ★「ホームページの管理」は、はめ込まない（管理画面をほかのページの中に出せる設定にすると、だまして操作させる危険があるため。
  *    Owner の index.html のカードは今のまま、管理画面を直接開く）
@@ -40,8 +41,31 @@
   (function () {
     var LOCAL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
     var src = LOCAL ? '../../../ホームページ/公開用/index.html?from=owner' : 'https://t3dining.github.io/baguru/?from=owner';
+    var frame = document.getElementById('hp');
+    var hpOrigin = new URL(src, location.href).origin;
+
+    // ---- テスト用アカウントの鍵を渡す（2026-11-06 ko-dai さんの指示「オーナーから開いたホームページもいつでも即予約ができるようにしてください」）
+    // 公式アプリのテスト用アカウントの鍵は、app.html が bg.appTest に預かっている（同じ場所なので、このページからも読める）。
+    // 中のホームページ（ご予約のページの即予約）が聞いてきたら、それを返す。ホームページは、受け口の nowAvail・quickReserve に足して送り、
+    // 受け口は、スイッチが止まっていても・受付時間の外でも即予約を受ける（テスト用の会員のとき。即予約の決めごと.md）。
+    // ・受けるのは、中の iframe の窓からで、場所がホームページの公開先（この Mac では同じ場所）のときだけ。返す先も名指し
+    // ・{ type: 'baguru-hp', kind: 'testAuth-hello' } → { type: 'baguru-owner', kind: 'testAuth', auth }（預かっていなければ null）
+    // ★読むだけ。覚え直す・消すのは app.html（公式アプリ）だけ。ほかの保存（お店の合言葉など）は読まない・渡さない
+    var pick = function (a) {
+      return a && typeof a === 'object' && typeof a.no === 'string' && typeof a.key === 'string'
+        && a.no.length > 0 && a.no.length <= 60 && a.key.length > 0 && a.key.length <= 200 ? { no: a.no, key: a.key } : null;
+    };
+    addEventListener('message', function (e) {
+      if (e.source !== frame.contentWindow || e.origin !== hpOrigin) return;
+      var d = e.data || {};
+      if (d.type !== 'baguru-hp' || d.kind !== 'testAuth-hello') return;
+      var kept = null;
+      try { kept = pick(JSON.parse(localStorage.getItem('bg.appTest') || 'null')); } catch (x) { kept = null; }
+      e.source.postMessage({ type: 'baguru-owner', kind: 'testAuth', auth: kept }, e.origin);
+    });
+
     var more = location.search.replace(/^\?/, '');
-    document.getElementById('hp').src = src + (more ? '&' + more : '') + location.hash;
+    frame.src = src + (more ? '&' + more : '') + location.hash;
   })();
 </script>
 </body>
