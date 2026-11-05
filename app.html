@@ -17,11 +17,12 @@
  *    公式アプリ（t3dining.github.io/baguru-app/）は Owner の範囲（manifest の scope "/"）の外になった。
  *    iPhone のホーム画面の Owner から開くと、ブラウザの画面（枠つき）になる。
  *    このページは Owner の範囲の中にあるので枠が付かない。公式アプリは中の iframe に出す。
- *  ★このページには何も覚えさせない・読ませない（お店の合言葉と同じ保存場所にあるため）。
- *    公式アプリからの知らせ（postMessage）も受けない。スクリプトは、下の行き先を決める数行だけにする
+ *  ★このページは、お店の保存（合言葉など。同じ保存場所にある）を読まない・渡さない。
+ *    覚えるのは、はめ込んだ公式アプリのテスト用アカウントの鍵（bg.appTest）だけ（下の「テスト用アカウントの鍵を預かる」）
  *  ★🏠 は足さない。公式アプリの側の 🏠 が、枠の外（Owner）に戻る（公式アプリのセッションが直す）。2つ出さないため
  *  ★sandbox は付けない（テスト用アカウントで、スタンプや LINE の QR をカメラで読むため。allow で許すものを決める）
- *  はめ込まれた公式アプリの保存は、ブラウザが Owner の中だけの場所に分ける（ふつうに開いた公式アプリとは別。テスト用アカウントは作り直し）
+ *  はめ込まれた公式アプリの保存は、ブラウザが Owner の中だけの場所に分ける（ふつうに開いた公式アプリとは別。テスト用アカウントは作り直し）。
+ *    ★iPhone の Safari は、その保存を閉じると消す（パソコンの Chrome は残す）。そのため鍵をこのページに預ける（2026-11-06）
  * ============================================================ -->
 <style>
   html, body { margin: 0; height: 100%; overflow: hidden; background: #1f1916; }   /* 色は公式アプリの上の帯と同じ */
@@ -47,6 +48,35 @@
   (function () {
     var LOCAL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
     var base = new URL(LOCAL ? '../' : 'https://t3dining.github.io/baguru-app/', location.href);
+    var frame = document.getElementById('app');
+
+    // ---- テスト用アカウントの鍵を預かる（2026-11-06 ko-dai さんの報告「スマホのオーナーから公式アプリを開くと毎回合言葉を聞かれる。パソコンだと聞かれません」）
+    // iPhone の Safari は、はめ込んだ公式アプリ（ほかの場所のページ）の保存を、閉じると消す。そのため、テスト用アカウントの鍵が毎回消え、
+    // 作る画面（お店の合言葉）が毎回出ていた。鍵をこのページ（Owner の場所。保存は消えない）にも預け、開いたときに返す。
+    // ・受けるのは、中の iframe の窓からで、場所が公式アプリの公開先（この Mac では同じ場所）のときだけ。返す先も名指し
+    // ・{ type: 'baguru-app', kind: 'testAuth-hello' } → 預かっている鍵を { type: 'baguru-owner', kind: 'testAuth', auth } で返す（無ければ null）
+    // ・{ type: 'baguru-app', kind: 'testAuth-set', auth } → 鍵を覚え直す（null なら消す）
+    // ★覚えるのは、この1つの名前（bg.appTest）だけ。ほかの保存（お店の合言葉など）は読まない・渡さない
+    // ★中の側は 公式アプリの js/app.js の「テスト用アカウントの鍵を、Owner にも預ける」。知らせの形を変えるときは、両方を一緒に直す
+    var KEEP = 'bg.appTest';
+    var pick = function (a) {
+      return a && typeof a === 'object' && typeof a.no === 'string' && typeof a.key === 'string'
+        && a.no.length > 0 && a.no.length <= 60 && a.key.length > 0 && a.key.length <= 200 ? { no: a.no, key: a.key } : null;
+    };
+    addEventListener('message', function (e) {
+      if (e.source !== frame.contentWindow || e.origin !== base.origin) return;
+      var d = e.data || {};
+      if (d.type !== 'baguru-app') return;
+      if (d.kind === 'testAuth-hello') {
+        var kept = null;
+        try { kept = pick(JSON.parse(localStorage.getItem(KEEP) || 'null')); } catch (x) { kept = null; }
+        e.source.postMessage({ type: 'baguru-owner', kind: 'testAuth', auth: kept }, e.origin);
+      } else if (d.kind === 'testAuth-set') {
+        var a = pick(d.auth);
+        try { if (a) localStorage.setItem(KEEP, JSON.stringify(a)); else localStorage.removeItem(KEEP); } catch (x) { /* 保存できない端末では、今までのとおり */ }
+      }
+    });
+
     var here = new URL(location.href);
     var url;
     try { url = new URL(here.searchParams.get('to') || '', base); } catch (e) { url = null; }
@@ -54,7 +84,7 @@
     here.searchParams.forEach(function (v, k) { if (k !== 'to') url.searchParams.set(k, v); });
     url.searchParams.set('from', 'owner');
     if (here.hash) url.hash = here.hash;
-    document.getElementById('app').src = url.href;
+    frame.src = url.href;
   })();
 </script>
 </body>
