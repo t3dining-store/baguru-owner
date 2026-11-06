@@ -40,7 +40,13 @@
   // このページを開いたときのアドレスの続き（? と #）も渡す
   (function () {
     var LOCAL = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
-    var src = LOCAL ? '../../../ホームページ/公開用/index.html?from=owner' : 'https://t3dining.github.io/baguru/?from=owner';
+    // ・?page=… で、ホームページの中のページを開ける（例：hp.html?page=takeout.html。2026-11-07 公式アプリのセッションが足した。
+    //   公式アプリの「‹ ホームページ」が、来たページに戻すため）。★受けるのは「英小文字・数字・-・_ の名前.html」だけ。ほかはホームページのはじめ
+    var here = new URL(location.href);
+    var page = here.searchParams.get('page') || '';
+    if (!/^[a-z0-9_-]+\.html$/.test(page)) page = '';
+    here.searchParams.delete('page');
+    var src = (LOCAL ? '../../../ホームページ/公開用/' + (page || 'index.html') : 'https://t3dining.github.io/baguru/' + (page === 'index.html' ? '' : page)) + '?from=owner';
     var frame = document.getElementById('hp');
     var hpOrigin = new URL(src, location.href).origin;
 
@@ -64,7 +70,7 @@
       e.source.postMessage({ type: 'baguru-owner', kind: 'testAuth', auth: kept }, e.origin);
     });
 
-    var more = location.search.replace(/^\?/, '');
+    var more = here.search.replace(/^\?/, '');
     frame.src = src + (more ? '&' + more : '') + location.hash;
   })();
 </script>
